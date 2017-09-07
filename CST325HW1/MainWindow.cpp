@@ -31,6 +31,7 @@ MainWindow::~MainWindow()
 void MainWindow::Run()
 {
 	SetTimer(_hWnd, 0, 20, NULL);
+	SetTimer(_hWnd, 1, 750, NULL);
 	ShowWindow(_hWnd, SW_SHOW);
 	while (_running) {
 		MSG currentMessage;
@@ -99,13 +100,24 @@ void MainWindow::OnPaint(HWND hWnd)
 
 	Renderer renderer(hWnd);
 	renderer.Clear();
-	renderer.DrawLine(0, 0, 100, 100);
-	renderer.PushPen(RGB(255, 0, 0), 2);
-	renderer.DrawLine(MouseState.X,MouseState.Y, 200, 200);
-	renderer.PushSolidBrush(RGB(210, 110, 50));
-	renderer.DrawRectFill(x, y, 150, 150);
+	
+	//Draw a button on the screen
+	renderer.PushSolidBrush(ButtonColor);
+	renderer.DrawRectFill(ButtonX, ButtonY,ButtonX+100,ButtonY+ 100);
 	renderer.PopBrush();
-	renderer.DrawRectFrame(x, y, 150, 150);
+
+	//Draw a dark green rectangle where the mouse is.
+	renderer.PushSolidBrush(RGB(10, 100, 20));
+	renderer.PushPen(RGB(20, 120, 40), 2);
+	renderer.DrawRectFrame(MouseState.X - 10, MouseState.Y - 10, MouseState.X + 10, MouseState.Y + 10);
+	renderer.DrawRectFill(MouseState.X - 10, MouseState.Y - 10, MouseState.X + 10, MouseState.Y + 10);
+	renderer.PopBrush();
+	renderer.PopPen();
+
+
+	
+
+
 	_frameIndex++;
 }
 
@@ -128,6 +140,20 @@ void MainWindow::OnLeftMouseUp(HWND hWnd, int x, int y, UINT keyFlags)
 	MouseState.X = x;
 	MouseState.Y = y;
 	MouseState.IsLeftButtonDown = false;
+
+	if (MouseState.X <= ButtonX + 100 &&
+		MouseState.X >= ButtonX&&
+		MouseState.Y <= ButtonY + 100 &&
+		MouseState.Y >= ButtonY) {
+		if (ButtonWillQuit) {
+			PostQuitMessage(0);
+		}
+		else {
+			ButtonX = 200;
+			ButtonY = 200;
+			ButtonWillQuit = true;
+		}
+	}
 }
 
 void MainWindow::OnRightMouseDown(HWND hWnd, BOOL isDoubleClick, int x, int y, UINT keyFlags)
@@ -135,6 +161,8 @@ void MainWindow::OnRightMouseDown(HWND hWnd, BOOL isDoubleClick, int x, int y, U
 	MouseState.X = x;
 	MouseState.Y = y;
 	MouseState.IsRightButtonDown = true;
+
+	
 }
 
 void MainWindow::OnRightMouseUp(HWND hWnd, int x, int y, UINT keyFlags)
@@ -150,6 +178,15 @@ void MainWindow::OnTimer(HWND hWnd, UINT id)
 	case 0:
 		ForcePaint();
 		break;
+	case 1:
+		if (IsButtonRed) {
+			ButtonColor = YellowButton;
+			IsButtonRed = false;
+		}
+		else {
+			ButtonColor = RedButton;
+			IsButtonRed = true;
+		}
 	default:
 		break;
 	}

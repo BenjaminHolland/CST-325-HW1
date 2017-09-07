@@ -3,7 +3,7 @@
 class MainWindow {
 protected:
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-	
+
 	LRESULT CALLBACK OnMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	void OnDestroy(HWND hWnd);
 	void OnPaint(HWND hWnd);
@@ -24,8 +24,15 @@ protected:
 		bool IsRightButtonDown, IsLeftButtonDown;
 	} MouseState;
 
+	//Button State
+	COLORREF RedButton = RGB(200, 30, 25);
+	COLORREF YellowButton = RGB(100, 100, 50);
+	COLORREF ButtonColor = RedButton;
+	bool IsButtonRed = true;
+	int ButtonX, ButtonY;
+	bool ButtonWillQuit = false;
 public:
-	
+
 	MainWindow(HINSTANCE hInstance);
 	~MainWindow();
 	void Run();
